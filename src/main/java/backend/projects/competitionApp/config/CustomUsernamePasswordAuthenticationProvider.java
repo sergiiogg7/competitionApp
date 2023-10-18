@@ -32,6 +32,7 @@ public class CustomUsernamePasswordAuthenticationProvider implements Authenticat
         String email = authentication.getName();
         String password = authentication.getCredentials().toString();
         Optional<User> user = this.userRepository.findByEmail(email);
+        Set<Authority> proof = user.get().getAuthorities();
         if (user.isPresent()) {
             if (this.passwordEncoder.matches(password, user.get().getPassword())) {
                 return new UsernamePasswordAuthenticationToken(email, password, getGrantedAuthorities(user.get().getAuthorities()));

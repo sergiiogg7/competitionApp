@@ -1,12 +1,14 @@
 package backend.projects.competitionApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -24,14 +26,17 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "user")
-    private Set<Authority> authorities;
+    @JsonManagedReference
+    @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+    private Set<Authority> authorities = new HashSet<>();;
     @OneToMany(mappedBy = "player")
     private Set<DataPlayer> dataPlayers;
+    @JsonManagedReference
     @OneToMany(mappedBy = "owner")
     private Set<Room> ownedRooms;
     @OneToMany(mappedBy = "requestingUser")
     private Set<RoomRequest> roomRequests;
+
+
 
 }
