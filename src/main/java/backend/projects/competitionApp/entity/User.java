@@ -28,15 +28,15 @@ public class User {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private Set<Authority> authorities = new HashSet<>();;
+    private Set<Authority> authorities = new HashSet<>();
+    @JsonManagedReference
     @OneToMany(mappedBy = "player")
     private Set<DataPlayer> dataPlayers;
     @JsonManagedReference
     @OneToMany(mappedBy = "owner")
     private Set<Room> ownedRooms;
+    @JsonManagedReference
     @OneToMany(mappedBy = "requestingUser")
     private Set<RoomRequest> roomRequests;
-
-
 
 }

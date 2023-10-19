@@ -2,6 +2,7 @@ package backend.projects.competitionApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,8 +29,10 @@ public class Room {
     @JsonBackReference
     @JoinColumn(name = "user_id")
     private User owner;
+    @JsonManagedReference
     @OneToMany(mappedBy = "room")
     private Set<DataPlayer> players;
+    @JsonManagedReference
     @OneToMany(mappedBy = "requestingRoom")
     private Set<RoomRequest> requests;
 }
