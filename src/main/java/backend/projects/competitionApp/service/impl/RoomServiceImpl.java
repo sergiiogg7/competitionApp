@@ -90,12 +90,7 @@ public class RoomServiceImpl implements RoomService {
         Room room = this.getRoomById(roomId);
         User user = this.userService.getUserById(userId);
         DataPlayer dp = this.dataPlayerService.findDataPlayerByUserAndRoom(user, room);
-        if (user.getDataPlayers().contains(dp)) {
-            Set<DataPlayer> updatedPlayersList = user.getDataPlayers();
-            updatedPlayersList.remove(dp);
-            user.setDataPlayers(updatedPlayersList);
-            this.userService.save(user);
-        }
+        this.dataPlayerService.remove(dp);
         return room;
     }
 

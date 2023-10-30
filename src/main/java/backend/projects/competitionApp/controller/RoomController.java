@@ -6,6 +6,7 @@ import backend.projects.competitionApp.service.DataPlayerService;
 import backend.projects.competitionApp.service.RoomRequestService;
 import backend.projects.competitionApp.service.RoomService;
 import backend.projects.competitionApp.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,9 +15,10 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@Controller
+@RestController
 @AllArgsConstructor
 @RequestMapping("/api/room")
+@SecurityRequirement(name = "bearerAuth")
 public class RoomController {
 
     private RoomService roomService;
@@ -45,15 +47,12 @@ public class RoomController {
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 
-
     @PostMapping("/{user_id}/room/{room_id}/request")
     public ResponseEntity<RoomRequest> requestAccess(@PathVariable("user_id") Long userId,
                                                      @PathVariable("room_id") Long roomId) {
         return new ResponseEntity<>(this.roomService.createRoomRequest(userId, roomId), HttpStatus.OK);
     }
 
-    //Añadir usuario a room
-    //Debe de existir un Request Room
     @PostMapping("/{room_id}/user/{user_id}")
     public ResponseEntity<Room> grantAccess(@PathVariable("room_id") Long roomId,
                                              @PathVariable("user_id") Long userId) {

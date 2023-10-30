@@ -2,6 +2,11 @@ package backend.projects.competitionApp.config;
 
 import backend.projects.competitionApp.filter.JWTGeneratorFilter;
 import backend.projects.competitionApp.filter.JWTValidatorFilter;
+import io.swagger.v3.oas.annotations.info.Contact;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.info.License;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +36,9 @@ public class ProjectSecurityConfig {
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register", "/api/login",
                                 "/api/room", "/api/room/search","/api/room/{id}", "/api/user/{user_id}/room/{room_id}/request", "/api/user/{user_id}/room/requests",
-                                "/api/room/{room_id}/user/{user_id}")
+                                "/api/room/{room_id}/user/{user_id}"
+                                ,"/doc/swagger-ui.html", "/webjars/**", "/v3/api-docs/**"
+                        )
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .cors(httpSecurityCorsConfigurer ->
                     httpSecurityCorsConfigurer.configurationSource(new CorsConfigurationSource() {
@@ -52,12 +59,14 @@ public class ProjectSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
+                        //.requestMatchers("/doc/swagger-ui.html", "/webjars/**", "/v3/api-docs/**").hasRole("USER")
                         .requestMatchers("/api/room").hasRole("USER")
                         .requestMatchers("/api/room/{id}").hasRole("USER")
                         .requestMatchers("/api/room/search").hasRole("USER")
                         .requestMatchers("/api/user/{user_id}/room/requests").hasRole("USER")
                         .requestMatchers("/api/room/{room_id}/user/{user_id}").hasRole("USER")
-                        .requestMatchers("/api/user/{user_id}/room/{room_id}/request").hasRole("USER"))
+                        .requestMatchers("/api/user/{user_id}/room/{room_id}/request").hasRole("USER")
+                        .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
 

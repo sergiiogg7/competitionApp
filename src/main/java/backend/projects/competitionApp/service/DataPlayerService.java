@@ -10,4 +10,5 @@ public interface DataPlayerService {
 
     DataPlayer save(DataPlayer dataPlayer);
     DataPlayer findDataPlayerByUserAndRoom(User user, Room room);
+    void remove(DataPlayer dataPlayer);
 }

@@ -30,4 +30,9 @@ public class DataPlayerServiceImpl implements DataPlayerService {
         );
         return dataPlayer;
     }
+
+    @Override
+    public void remove(DataPlayer dataPlayer) {
+        this.dataPlayerRepository.delete(dataPlayer);
+    }
 }
