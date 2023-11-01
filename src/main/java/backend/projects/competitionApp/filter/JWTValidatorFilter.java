@@ -22,8 +22,14 @@ import java.nio.charset.StandardCharsets;
 public class JWTValidatorFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        String jwt = request.getHeader(SecurityConstants.JWT_HEADER);
-        if (jwt != null) {
+        String tokenType = "";
+        String jwt = null;
+        String authorizationHeader = request.getHeader(SecurityConstants.JWT_HEADER);
+        if (authorizationHeader != null) {
+            tokenType = authorizationHeader.split(" ")[0];
+            jwt = authorizationHeader.split(" ")[1];
+        }
+        if (jwt != null && tokenType.equals("Bearer")) {
             try {
                 SecretKey key = Keys.hmacShaKeyFor(SecurityConstants.JWT_KEY.getBytes(StandardCharsets.UTF_8));
                 Claims claims = Jwts.parserBuilder()

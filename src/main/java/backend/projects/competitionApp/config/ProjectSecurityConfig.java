@@ -37,7 +37,6 @@ public class ProjectSecurityConfig {
                 .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register", "/api/login",
                                 "/api/room", "/api/room/search","/api/room/{id}", "/api/user/{user_id}/room/{room_id}/request", "/api/user/{user_id}/room/requests",
                                 "/api/room/{room_id}/user/{user_id}"
-                                ,"/doc/swagger-ui.html", "/webjars/**", "/v3/api-docs/**"
                         )
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .cors(httpSecurityCorsConfigurer ->
@@ -49,7 +48,7 @@ public class ProjectSecurityConfig {
                             config.setAllowedMethods(Collections.singletonList("*"));
                             config.setAllowCredentials(true);
                             config.setAllowedHeaders(Collections.singletonList("*"));
-                            config.setExposedHeaders(Arrays.asList("Authorization"));//Por defecto la politica del CORS, no permite la cabecera Authorization, de esta manera se permite
+                            config.setExposedHeaders(Arrays.asList("Authorization"));
                             config.setMaxAge(3600L);
                             return config;
                         }
@@ -59,7 +58,6 @@ public class ProjectSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
-                        //.requestMatchers("/doc/swagger-ui.html", "/webjars/**", "/v3/api-docs/**").hasRole("USER")
                         .requestMatchers("/api/room").hasRole("USER")
                         .requestMatchers("/api/room/{id}").hasRole("USER")
                         .requestMatchers("/api/room/search").hasRole("USER")

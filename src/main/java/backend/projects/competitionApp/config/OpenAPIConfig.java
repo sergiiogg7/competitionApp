@@ -36,13 +36,19 @@ import io.swagger.v3.oas.annotations.servers.Server;
                 )
         }
 )
-//@SecurityScheme(
-//        name = "bearerAuth",
-//        description = "Put here the JWT",
-//        scheme = "bearer",
-//        type = SecuritySchemeType.HTTP,
-//        bearerFormat = "JWT",
-//        in = SecuritySchemeIn.HEADER
-//)
+@SecurityScheme(
+        name = "bearerAuth",
+        description = "Put here your JWT",
+        scheme = "bearer",
+        type = SecuritySchemeType.HTTP,
+        bearerFormat = "JWT",
+        in = SecuritySchemeIn.HEADER
+)
+@SecurityScheme(
+        name = "basicAuth",
+        description = "Add here your email and password",
+        scheme = "basic",
+        type = SecuritySchemeType.HTTP
+)
 public class OpenAPIConfig {
 }
