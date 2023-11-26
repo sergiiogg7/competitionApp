@@ -19,11 +19,11 @@ public class RoomRequest {
     private Long id;
     private RoomRequestState state;
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-roomRequests")
     @JoinColumn(name = "user_id")
     private User requestingUser;
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "room-requests")
     @JoinColumn(name = "room_id")
     private Room requestingRoom;
     public RoomRequest(RoomRequestState state, User requestingUser, Room requestingRoom) {

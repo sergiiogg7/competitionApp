@@ -4,10 +4,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.Set;
@@ -15,6 +12,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 public class Room {
@@ -26,13 +24,13 @@ public class Room {
     private String description;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-ownedRooms")
     @JoinColumn(name = "user_id")
     private User owner;
-    @JsonManagedReference
+    @JsonManagedReference(value = "room-players")
     @OneToMany(mappedBy = "room")
     private Set<DataPlayer> players;
-    @JsonManagedReference
+    @JsonManagedReference(value = "room-requests")
     @OneToMany(mappedBy = "requestingRoom")
     private Set<RoomRequest> requests;
 }

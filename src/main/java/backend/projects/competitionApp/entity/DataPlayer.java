@@ -30,11 +30,11 @@ public class DataPlayer {
     @Column(nullable = false)
     private List<Double> profits;
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-dataPlayers")
     @JoinColumn(name = "user_id")
     private User player;
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "room-players")
     @JoinColumn(name = "room_id")
     private Room room;
 

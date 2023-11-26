@@ -20,7 +20,7 @@ public class Authority {
     private String name;
 
     @ManyToOne
-    @JsonBackReference
+    @JsonBackReference(value = "user-authorities")
     @JoinColumn(name = "user_id")
     private User user;
 

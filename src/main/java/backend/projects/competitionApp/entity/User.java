@@ -24,16 +24,19 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @JsonManagedReference
+    @JsonManagedReference(value = "user-authorities")
     @OneToMany(mappedBy = "user", fetch = FetchType.EAGER, cascade = CascadeType.ALL)
     private Set<Authority> authorities = new HashSet<>();
-    @JsonManagedReference
+
+    @JsonManagedReference(value = "user-dataPlayers")
     @OneToMany(mappedBy = "player")
     private Set<DataPlayer> dataPlayers;
-    @JsonManagedReference
+
+    @JsonManagedReference(value = "user-ownedRooms")
     @OneToMany(mappedBy = "owner")
     private Set<Room> ownedRooms;
-    @JsonManagedReference
+
+    @JsonManagedReference(value = "user-roomRequests")
     @OneToMany(mappedBy = "requestingUser")
     private Set<RoomRequest> roomRequests;
 
