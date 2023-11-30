@@ -11,7 +11,7 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh 'echo "Falta por preparar para ejecutar los tests'
+                sh 'echo "Falta por preparar para ejecutar los tests"'
             }
         }
         stage('Deploy') {
