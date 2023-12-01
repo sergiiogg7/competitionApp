@@ -38,31 +38,31 @@ pipeline {
                 }
             }
         }
-//        stage('Docker Build & Push') {
-//            steps {
-//                script {
-//                    docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
-//                        def appmavenjenkins = docker.build("macloujulian/mavenjenkins:${gitcommit}", ".")
-//                        appmavenjenkins.push()
-//                    }
-//                }
-//            }
-//        }
+        stage('Docker Build & Push') {
+            steps {
+                script {
+                    docker.withRegistry('https://registry.hub.docker.com', 'dockerhub') {
+                        def appmavenjenkins = docker.build("sergiiogg7/compapp:${gitcommit}", ".")
+                        appmavenjenkins.push()
+                    }
+                }
+            }
+        }
 //        stage('Deploy') {
 //            steps {
 //                sh './jenkins/scripts/deliver.sh'
 //            }
 //        }
     }
-//    post {
-//        success {
-//            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-//        }
-//        failure {
-//            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-//        }
-//        always {
-//            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
-//        }
-//    }
+    post {
+        success {
+            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+        failure {
+            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+        always {
+            slackSend message: "Build Started - ${env.JOB_NAME} ${env.BUILD_NUMBER} (<${env.BUILD_URL}|Open>)"
+        }
+    }
 }
