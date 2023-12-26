@@ -16,7 +16,7 @@ import io.swagger.v3.oas.annotations.servers.Server;
                         email = "sergiogarciagasco14@gmail.com",
                         url = "https://www.google.com"
                 ),
-                description = "OpenApi documentation for Fullstack Trading Backend Application",
+                description = "OpenApi documentation for Fullstack Trading Backend",
                 title = "OpenApi specification - sg7",
                 version =  "1.0",
                 license = @License(
