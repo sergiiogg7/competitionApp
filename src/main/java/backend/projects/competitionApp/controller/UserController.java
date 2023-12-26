@@ -29,4 +29,7 @@ public class UserController {
         return new ResponseEntity<>(this.userService.getAllRequestsToUserRooms(userId), HttpStatus.OK);
     }
 
+
+
+
 }

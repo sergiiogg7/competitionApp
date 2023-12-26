@@ -7,7 +7,7 @@
 
 1. **Clone the Repository**
     ```bash
-    git clone -b dev https://github.com/sergiiogg7/competitionApp.git
+    git clone -b test https://github.com/sergiiogg7/competitionApp.git
     ```
 
 2. **Navigate to Project Directory**
@@ -17,12 +17,12 @@
 
 3. **Build the Docker Image**
     ```bash
-    docker build -t comp-dev -f .\Dockerfile .
+    docker build -t comp-test -f .\Dockerfile .
     ```
 
 4. **Run the Docker Container**
     ```bash
-    docker run -p 8080:8080 comp-dev
+    docker run -p 8080:8080 comp-test
     ```
 
 5. **Access the Application**
