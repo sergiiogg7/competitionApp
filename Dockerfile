@@ -16,9 +16,7 @@ RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip "-Dspring-boot.repa
 
 COPY ./src ./src
 
-RUN ./mvnw test "-Dspring.profiles.active=test"
-
-RUN ./mvnw clean package "-Dspring.profiles.active=test" "-Dmaven.test.skip"
+RUN ./mvnw clean package "-Dmaven.test.skip"
 
 FROM openjdk:17-jdk-alpine
 
@@ -27,5 +25,5 @@ WORKDIR /app
 COPY --from=builder /app/target/competitionApp-0.0.1-SNAPSHOT.jar .
 EXPOSE 8080
 
-ENTRYPOINT ["java", "-Dspring.profiles.active=test", "-jar", "competitionApp-0.0.1-SNAPSHOT.jar"]
+ENTRYPOINT ["java", "-jar", "competitionApp-0.0.1-SNAPSHOT.jar"]
 
