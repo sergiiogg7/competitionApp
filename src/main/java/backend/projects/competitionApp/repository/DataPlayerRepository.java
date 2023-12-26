@@ -11,9 +11,7 @@ import org.springframework.data.repository.query.Param;
 import java.util.Optional;
 
 public interface DataPlayerRepository extends JpaRepository<DataPlayer, Long> {
-
     @Query("SELECT dp FROM DataPlayer dp " +
             "WHERE dp.player = :user AND dp.room = :room")
     Optional<DataPlayer> findDataPlayerByUserAndRoom(@Param("user") User user, @Param("room") Room room);
-
 }
