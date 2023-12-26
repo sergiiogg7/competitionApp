@@ -26,4 +26,3 @@ COPY --from=builder /app/target/competitionApp-0.0.1-SNAPSHOT.jar .
 EXPOSE 8080
 
 ENTRYPOINT ["java", "-jar", "competitionApp-0.0.1-SNAPSHOT.jar"]
-
