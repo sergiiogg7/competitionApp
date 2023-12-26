@@ -17,12 +17,12 @@
 
 3. **Build the Docker Image**
     ```bash
-    docker build -t <dev-name> -f .\Dockerfile .
+    docker build -t comp-<dev-name> -f .\Dockerfile .
     ```
 
 4. **Run the Docker Container**
     ```bash
-    docker run -p 8080:8080 <dev-name>
+    docker run -p 8080:8080 comp-<dev-name>
     ```
 
 5. **Access the Application**
