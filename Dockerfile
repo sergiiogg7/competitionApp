@@ -12,7 +12,7 @@ COPY ./mvnw .
 # -package -- Ejecuta todos las fases del ciclo de vida por defecto hasta la pase package
 # -Dmaven.main.skip -- Omite el codigo fuente
 # -Dspring-boot.repackage.skip -- Omite la reempaquetacion de la app Spring Boot en un ejecutable . Para no crear el JAE
-RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip "-Dspring-boot.repackage.skip"
+RUN ./mvnw clean package -Dmaven.test.skip -Dmaven.main.skip -Dspring-boot.repackage.skip
 
 COPY ./src ./src
 
