@@ -7,7 +7,7 @@
 
 1. **Clone the Repository**
     ```bash
-    git clone -b master https://github.com/sergiiogg7/competitionApp.git
+    git clone -b test https://github.com/sergiiogg7/competitionApp.git
     ```
 
 2. **Navigate to Project Directory**
