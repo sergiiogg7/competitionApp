@@ -124,11 +124,26 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public Room revokeAccess(Long roomId, Long userId) {
+        boolean userAuthorized = false;
         Room room = this.getRoomById(roomId);
         User user = this.userService.getUserById(userId);
-        DataPlayer dp = this.dataPlayerService.findDataPlayerByUserAndRoom(user, room);
-        this.dataPlayerService.remove(dp);
-        return room;
-    }
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
+        }
+
+        if (userAuthorized) {
+            RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
+            if (roomRequest.getState() == RoomRequestState.PENDING) {
+                roomRequest.setState(RoomRequestState.DECLINED);
+                this.roomRequestService.save(roomRequest);
+            }
+
+            return room;
+        } else {
+            throw new UnauthorizedActionException();
+        }
+    }
 }
