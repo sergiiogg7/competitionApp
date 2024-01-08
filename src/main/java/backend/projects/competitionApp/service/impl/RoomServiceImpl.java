@@ -72,9 +72,7 @@ public class RoomServiceImpl implements RoomService {
             if (username.equals(user.getEmail())) { userAuthorized = true; }
         }
 
-        //Si el usuario que hace la peticion es el mismo que el que solicita hacer la roomrequest
         if (userAuthorized) {
-            //Buscar que no exista una room request con el mismo roomId y UserId
             List<RoomRequest> roomRequests = this.roomRequestService.getAllRooms(user);
             boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest -> roomRequest.getRequestingUser().equals(user) &&
                     roomRequest.getRequestingRoom().equals(room));
