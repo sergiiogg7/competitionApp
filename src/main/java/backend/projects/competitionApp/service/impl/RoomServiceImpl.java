@@ -6,12 +6,16 @@ import backend.projects.competitionApp.entity.RoomRequest;
 import backend.projects.competitionApp.entity.User;
 import backend.projects.competitionApp.enumeration.RoomRequestState;
 import backend.projects.competitionApp.exception.ResourceNotFoundException;
+import backend.projects.competitionApp.exception.RoomRequestAlreadyExistsException;
+import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.repository.RoomRepository;
 import backend.projects.competitionApp.service.DataPlayerService;
 import backend.projects.competitionApp.service.RoomRequestService;
 import backend.projects.competitionApp.service.RoomService;
 import backend.projects.competitionApp.service.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -58,13 +62,32 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public RoomRequest createRoomRequest(Long userId, Long roomId) {
-
-        Room room = this.roomRepository.findById(roomId).orElseThrow(
-                () -> new ResourceNotFoundException("Room", "id", roomId+"")
-        );
+        boolean userAuthorized = false;
         User user = this.userService.getUserById(userId);
-        RoomRequest savedRoomRequest = this.roomRequestService.save(new RoomRequest(RoomRequestState.PENDING, user, room));
-        return savedRoomRequest;
+        Room room = this.roomRepository.findById(roomId).orElseThrow( () -> new ResourceNotFoundException("Room", "id", roomId+""));
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(user.getEmail())) { userAuthorized = true; }
+        }
+
+        //Si el usuario que hace la peticion es el mismo que el que solicita hacer la roomrequest
+        if (userAuthorized) {
+            //Buscar que no exista una room request con el mismo roomId y UserId
+            List<RoomRequest> roomRequests = this.roomRequestService.getAllRooms(user);
+            boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest -> roomRequest.getRequestingUser().equals(user) &&
+                    roomRequest.getRequestingRoom().equals(room));
+            if (roomRequestExists) {
+                throw new RoomRequestAlreadyExistsException("RoomRequest", "userId", userId+"", "roomId", roomId+"");
+            }
+
+            RoomRequest savedRoomRequest = this.roomRequestService.save(new RoomRequest(RoomRequestState.PENDING, user, room));
+            return savedRoomRequest;
+        } else {
+            throw new UnauthorizedActionException();
+        }
+
     }
 
     @Override
