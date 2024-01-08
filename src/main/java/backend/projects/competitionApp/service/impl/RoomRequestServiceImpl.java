@@ -42,7 +42,7 @@ public class RoomRequestServiceImpl implements RoomRequestService {
     @Override
     public RoomRequest findByUserAndRoom(User user, Room room) {
         RoomRequest roomRequest = this.roomRequestRepository.findByUserAndRoom(user,room).orElseThrow(
-                () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.toString()+ " , " + room.toString())
+                () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.getId()+ " , " + room.getId()+"")
         );
         return roomRequest;
     }
