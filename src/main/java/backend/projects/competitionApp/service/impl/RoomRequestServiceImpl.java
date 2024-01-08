@@ -32,6 +32,13 @@ public class RoomRequestServiceImpl implements RoomRequestService {
         );
         return roomRequest;
     }
+
+    @Override
+    public List<RoomRequest> getAllRooms(User user) {
+        List<RoomRequest> roomRequests = this.roomRequestRepository.findByUser(user).get();
+        return roomRequests;
+    }
+
     @Override
     public RoomRequest findByUserAndRoom(User user, Room room) {
         RoomRequest roomRequest = this.roomRequestRepository.findByUserAndRoom(user,room).orElseThrow(

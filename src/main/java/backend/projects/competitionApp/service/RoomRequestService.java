@@ -14,6 +14,7 @@ public interface RoomRequestService {
 
     RoomRequest save(RoomRequest roomRequest);
     RoomRequest getRoomRequestById(Long id);
+    List<RoomRequest> getAllRooms(User user);
     RoomRequest findByUserAndRoom(User user, Room room);
 
 }
