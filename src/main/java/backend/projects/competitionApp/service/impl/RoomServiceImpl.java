@@ -74,8 +74,11 @@ public class RoomServiceImpl implements RoomService {
 
         if (userAuthorized) {
             List<RoomRequest> roomRequests = this.roomRequestService.getAllRooms(user);
-            boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest -> roomRequest.getRequestingUser().equals(user) &&
-                    roomRequest.getRequestingRoom().equals(room));
+            boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest ->
+                    roomRequest.getRequestingUser().equals(user) &&
+                    roomRequest.getRequestingRoom().equals(room) &&
+                    !roomRequest.getState().equals(RoomRequestState.DECLINED));
+
             if (roomRequestExists) {
                 throw new RoomRequestAlreadyExistsException("RoomRequest", "userId", userId+"", "roomId", roomId+"");
             }
