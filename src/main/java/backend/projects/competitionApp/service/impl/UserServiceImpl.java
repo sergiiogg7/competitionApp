@@ -7,6 +7,7 @@ import backend.projects.competitionApp.entity.User;
 import backend.projects.competitionApp.enumeration.RoomRequestState;
 import backend.projects.competitionApp.exception.EmailAlreadyExistsException;
 import backend.projects.competitionApp.exception.ResourceNotFoundException;
+import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.repository.AuthorityRepository;
 import backend.projects.competitionApp.repository.RoomRepository;
 import backend.projects.competitionApp.repository.RoomRequestRepository;
@@ -14,6 +15,8 @@ import backend.projects.competitionApp.repository.UserRepository;
 import backend.projects.competitionApp.service.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,8 +70,23 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public List<RoomRequest> getAllRequestsToUserRooms(Long userId) {
-        List<RoomRequest> roomRequests = this.userRepository.getAllRequestsToUserRooms(userId);
-        return roomRequests;
+        boolean userAuthorized = false;
+        User user = this.getUserById(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(user.getEmail())) { userAuthorized = true; }
+        }
+
+        if (userAuthorized) {
+            List<RoomRequest> roomRequests = this.userRepository.getAllRequestsToUserRooms(userId);
+            return roomRequests;
+        } else{
+            throw new UnauthorizedActionException();
+        }
+
+
     }
 
 }
