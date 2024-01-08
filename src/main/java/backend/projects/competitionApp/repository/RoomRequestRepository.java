@@ -16,4 +16,8 @@ public interface RoomRequestRepository extends JpaRepository<RoomRequest, Long> 
             "WHERE rr.requestingUser = :user AND rr.requestingRoom = :room AND rr.state = 0")
     Optional<RoomRequest> findByUserAndRoom(@Param("user") User user, @Param("room") Room room);
 
+    @Query("SELECT rr FROM RoomRequest rr " +
+            "WHERE rr.requestingUser = :user")
+    Optional<List<RoomRequest>> findByUser(@Param("user") User user);
+
 }
