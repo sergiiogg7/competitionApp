@@ -93,18 +93,32 @@ public class RoomServiceImpl implements RoomService {
     @Override
     @Transactional
     public Room grantAccessToUser(Long roomId, Long userId) {
+        boolean userAuthorized = false;
+
         Room room = this.getRoomById(roomId);
         User user = this.userService.getUserById(userId);
-        RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
-        if (roomRequest.getState() == RoomRequestState.PENDING) {
-            roomRequest.setState(RoomRequestState.ACCEPTED);
-            this.roomRequestService.save(roomRequest);
-            List<Double> profits = new ArrayList<>();
-            DataPlayer dataPlayer = new DataPlayer(profits, user, room);
-            this.dataPlayerService.save(dataPlayer);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
         }
 
-        return room;
+        if (userAuthorized) {
+            RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
+            if (roomRequest.getState() == RoomRequestState.PENDING) {
+                roomRequest.setState(RoomRequestState.ACCEPTED);
+                this.roomRequestService.save(roomRequest);
+                List<Double> profits = new ArrayList<>();
+                DataPlayer dataPlayer = new DataPlayer(profits, user, room);
+                this.dataPlayerService.save(dataPlayer);
+            }
+
+            return room;
+        }else {
+            throw new UnauthorizedActionException();
+        }
+
     }
 
     @Override
