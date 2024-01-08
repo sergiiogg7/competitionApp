@@ -54,7 +54,7 @@ public class RoomController {
         return new ResponseEntity<>(rooms, HttpStatus.OK);
     }
 
-    @PostMapping("/{user_id}/room/{room_id}/request")
+    @PostMapping("/{room_id}/user/{user_id}/request")
     @Operation(summary = "User requests access to a room", description = "The user identified with userId will request " +
             "access to the owner of the room with roomId identifier")
     public ResponseEntity<RoomRequest> requestAccess(@PathVariable("user_id") Long userId,

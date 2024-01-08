@@ -35,7 +35,7 @@ public class ProjectSecurityConfig {
 
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register", "/api/login",
-                                "/api/room", "/api/room/search","/api/room/{id}", "/api/user/{user_id}/room/{room_id}/request", "/api/user/{user_id}/room/requests",
+                                "/api/room", "/api/room/search","/api/room/{id}", "/api/room/{room_id}/user/{user_id}/request", "/api/user/{user_id}/room/requests",
                                 "/api/room/{room_id}/user/{user_id}"
                         )
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
@@ -63,7 +63,7 @@ public class ProjectSecurityConfig {
                         .requestMatchers("/api/room/search").hasRole("USER")
                         .requestMatchers("/api/user/{user_id}/room/requests").hasRole("USER")
                         .requestMatchers("/api/room/{room_id}/user/{user_id}").hasRole("USER")
-                        .requestMatchers("/api/user/{user_id}/room/{room_id}/request").hasRole("USER")
+                        .requestMatchers("/api/room/{room_id}/user/{user_id}/request").hasRole("USER")
                         .anyRequest().permitAll())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
