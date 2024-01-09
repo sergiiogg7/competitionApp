@@ -2,6 +2,7 @@ package backend.projects.competitionApp.controller;
 
 import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
+import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.service.DataPlayerService;
 import backend.projects.competitionApp.service.RoomRequestService;
 import backend.projects.competitionApp.service.RoomService;
@@ -12,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,8 +36,49 @@ public class RoomController {
         return new ResponseEntity<>(savedRoom, HttpStatus.CREATED);
     }
 
+    @PutMapping("/{room_id}")
+    @Operation(summary = "Update a competition room", description = "")
+    public ResponseEntity<Room> updateRoomById(@RequestBody Room room, @PathVariable("room_id") Long id) {
+        boolean userAuthorized = false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            Room existingRoom = this.roomService.getRoomById(id);
+            if (username.equals(existingRoom.getOwner().getEmail())) {
+                userAuthorized = true;
+            }
+        }
+        if (userAuthorized) {
+            Room updatedRoom = this.roomService.updateRoomById(room, id);
+            return new ResponseEntity<>(updatedRoom, HttpStatus.CREATED);
+        } else {
+            throw new UnauthorizedActionException();
+        }
+    }
+
+    @DeleteMapping("/{room_id}")
+    @Operation(summary = "Delete a competition room", description = "")
+    public ResponseEntity<String> deleteRoomById(@PathVariable("room_id") Long id) {
+        boolean userAuthorized = false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            Room existingRoom = this.roomService.getRoomById(id);
+            if (username.equals(existingRoom.getOwner().getEmail())) {
+                userAuthorized = true;
+            }
+        }
+
+        if (userAuthorized) {
+            this.roomService.deleteRoomById(id);
+            return new ResponseEntity<String>("Room with id " + id + " has been deleted successfully.", HttpStatus.OK);
+        } else {
+            throw new UnauthorizedActionException();
+        }
+    }
+
     @GetMapping("/{id}")
-    @Operation(summary = "Get room by identicator", description = "")
+    @Operation(summary = "Get room by identifier", description = "")
     public ResponseEntity<Room> getRoomById(@PathVariable("id") Long id) {
         Room room = this.roomService.getRoomById(id);
         return new ResponseEntity<>(room, HttpStatus.OK);

@@ -7,8 +7,10 @@ import java.util.List;
 
 public interface RoomService {
 
-    Room createRoom(Room room);
     Room getRoomById(Long id);
+    Room createRoom(Room room);
+    Room updateRoomById(Room room, Long id);
+    void deleteRoomById(Long id);
     List<Room> searchRooms(String query);
     List<Room> getAllRooms();
     RoomRequest createRoomRequest(Long userId, Long roomId);

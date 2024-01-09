@@ -42,6 +42,24 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    public void deleteRoomById(Long id) {
+        this.roomRepository.deleteById(id);
+    }
+
+    @Override
+    public Room updateRoomById(Room room, Long id) {
+        Room existingRoom = this.getRoomById(id);
+        existingRoom.setName(room.getName());
+        existingRoom.setDescription(room.getDescription());
+        //TO DO
+        //existingRoom.setOwner(room.getOwner());
+        //TO DO
+        //existingRoom.setPlayers(room.getPlayers());
+        this.roomRepository.save(existingRoom);
+        return existingRoom;
+    }
+
+    @Override
     public Room getRoomById(Long id) {
         Room room = this.roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room", "id", id+"")
