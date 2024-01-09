@@ -34,7 +34,7 @@ public class ProjectSecurityConfig {
         requestHandler.setCsrfRequestAttributeName("_csrf");
 
         http.sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register", "/api/login",
+                .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/api/register", "/api/login", "/api/user/{user_id}", "/api/user/{user_id}",
                                 "/api/room", "/api/room/search","/api/room/{id}", "/api/room/{room_id}/user/{user_id}/request", "/api/user/{user_id}/room/requests",
                                 "/api/room/{room_id}/user/{user_id}"
                         )
@@ -58,6 +58,8 @@ public class ProjectSecurityConfig {
                 .authorizeHttpRequests((requests) -> requests
                         .requestMatchers("/api/login").permitAll()
                         .requestMatchers("/api/register").permitAll()
+                        .requestMatchers("/api/user/{user_id}").hasRole("USER")
+                        .requestMatchers("/api/user/{user_id}").hasRole("USER")
                         .requestMatchers("/api/room").hasRole("USER")
                         .requestMatchers("/api/room/{id}").hasRole("USER")
                         .requestMatchers("/api/room/search").hasRole("USER")

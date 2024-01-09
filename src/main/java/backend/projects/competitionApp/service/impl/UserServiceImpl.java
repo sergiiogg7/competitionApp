@@ -17,6 +17,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,6 +44,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
     public User save(User user) {
         return this.userRepository.save(user);
     }
@@ -69,6 +71,26 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    @Transactional
+    public User updateUserById(User user, Long id) {
+        User existingUser = this.getUserById(id);
+        existingUser.setName(user.getName());
+        existingUser.setSurnames(user.getSurnames());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setPassword(user.getPassword());
+        this.userRepository.save(existingUser);
+
+        return existingUser;
+    }
+
+    @Override
+    @Transactional
+    public void deleteUserById(Long id) {
+        this.userRepository.deleteById(id);
+    }
+
+
+    @Override
     public List<RoomRequest> getAllRequestsToUserRooms(Long userId) {
         boolean userAuthorized = false;
         User user = this.getUserById(userId);
@@ -85,8 +107,7 @@ public class UserServiceImpl implements UserService {
         } else{
             throw new UnauthorizedActionException();
         }
-
-
     }
+
 
 }

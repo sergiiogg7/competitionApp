@@ -13,5 +13,7 @@ public interface UserService {
     User save(User user);
     User getUserByEmail(String email);
     User createUser(User user);
+    User updateUserById(User user, Long id);
+    void deleteUserById(Long id);
     List<RoomRequest> getAllRequestsToUserRooms(Long userId);
 }
