@@ -60,6 +60,17 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
+    public void deletePlayerFromRoomByUserId(Long roomId, Long userId) {
+        Room existingRoom = this.getRoomById(roomId);
+        User existingUser = this.userService.getUserById(userId);
+        DataPlayer dataPlayer = this.dataPlayerService.findDataPlayerByUserAndRoom(existingUser, existingRoom);
+        //Comprobar que el room request este acceptado para poder borrar si no no
+        this.roomRequestService.deleteAcceptedRoomRequest(dataPlayer);
+        this.dataPlayerService.remove(dataPlayer);
+    }
+
+    @Override
     public Room getRoomById(Long id) {
         Room room = this.roomRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("Room", "id", id+"")

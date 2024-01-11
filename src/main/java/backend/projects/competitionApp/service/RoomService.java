@@ -10,6 +10,7 @@ public interface RoomService {
     Room getRoomById(Long id);
     Room createRoom(Room room);
     Room updateRoomById(Room room, Long id);
+    void deletePlayerFromRoomByUserId(Long roomId, Long userId);
     void deleteRoomById(Long id);
     List<Room> searchRooms(String query);
     List<Room> getAllRooms();
