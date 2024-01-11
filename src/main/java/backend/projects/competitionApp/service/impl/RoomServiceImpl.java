@@ -140,7 +140,7 @@ public class RoomServiceImpl implements RoomService {
                 roomRequest.setState(RoomRequestState.ACCEPTED);
                 this.roomRequestService.save(roomRequest);
                 List<Double> profits = new ArrayList<>();
-                DataPlayer dataPlayer = new DataPlayer(profits, user, room);
+                DataPlayer dataPlayer = new DataPlayer(user, room);
                 this.dataPlayerService.save(dataPlayer);
             }
 
