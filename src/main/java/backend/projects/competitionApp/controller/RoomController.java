@@ -2,6 +2,7 @@ package backend.projects.competitionApp.controller;
 
 import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
+import backend.projects.competitionApp.entity.User;
 import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.service.DataPlayerService;
 import backend.projects.competitionApp.service.RoomRequestService;
@@ -28,6 +29,8 @@ import java.util.List;
 public class RoomController {
 
     private RoomService roomService;
+
+    private UserService userService;
 
     @PostMapping
     @Operation(summary = "Create a competition room", description = "")
@@ -72,6 +75,29 @@ public class RoomController {
         if (userAuthorized) {
             this.roomService.deleteRoomById(id);
             return new ResponseEntity<String>("Room with id " + id + " has been deleted successfully.", HttpStatus.OK);
+        } else {
+            throw new UnauthorizedActionException();
+        }
+    }
+
+    @DeleteMapping("/{room_id}/user/{user_id}/dataplayer")
+    @Operation(summary =  "Delete user from a competition room", description = "")
+    public ResponseEntity<String> deletePlayerFromRoomByUserId(@PathVariable("room_id") Long roomId,
+                                                      @PathVariable("user_id") Long userId) {
+        boolean userAuthorized = false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            Room existingRoom = this.roomService.getRoomById(userId);
+            User existingUser = this.userService.getUserById(userId);
+            if(username.equals(existingRoom.getOwner().getEmail())  || username.equals(existingUser.getEmail())) {
+                userAuthorized = true;
+            }
+        }
+
+        if (userAuthorized) {
+            this.roomService.deletePlayerFromRoomByUserId(roomId, userId);
+            return new ResponseEntity<String>("Player with id " + userId + " was deleted succesfylly from room with room_id: " + roomId, HttpStatus.OK);
         } else {
             throw new UnauthorizedActionException();
         }
