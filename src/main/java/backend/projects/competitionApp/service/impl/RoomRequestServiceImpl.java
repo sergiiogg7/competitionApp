@@ -1,5 +1,6 @@
 package backend.projects.competitionApp.service.impl;
 
+import backend.projects.competitionApp.entity.DataPlayer;
 import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
 import backend.projects.competitionApp.entity.User;
@@ -26,6 +27,34 @@ public class RoomRequestServiceImpl implements RoomRequestService {
     }
 
     @Override
+    public void deleteRoomRequest(DataPlayer dataPlayer) {
+        User user = dataPlayer.getPlayer();
+        Room room = dataPlayer.getRoom();
+        RoomRequest roomRequest = this.roomRequestRepository.findRoomRequestsByUserAndRoom(user, room).orElseThrow(
+                () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.getId()+ " , " + room.getId()+"")
+        );
+        this.roomRequestRepository.delete(roomRequest);
+    }
+
+    public void deleteAcceptedRoomRequest(DataPlayer dataPlayer) {
+        User user = dataPlayer.getPlayer();
+        Room room = dataPlayer.getRoom();
+        RoomRequest roomRequest = this.roomRequestRepository.findAcceptedRoomRequestsByUserAndRoom(user, room).orElseThrow(
+                () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.getId()+ " , " + room.getId()+"")
+        );
+        this.roomRequestRepository.delete(roomRequest);
+    }
+
+    public void deletePendingRoomRequest(DataPlayer dataPlayer) {
+        User user = dataPlayer.getPlayer();
+        Room room = dataPlayer.getRoom();
+        RoomRequest roomRequest = this.roomRequestRepository.findPendingRoomRequestsByUserAndRoom(user, room).orElseThrow(
+                () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.getId()+ " , " + room.getId()+"")
+        );
+        this.roomRequestRepository.delete(roomRequest);
+    }
+
+    @Override
     public RoomRequest getRoomRequestById(Long id) {
         RoomRequest roomRequest = this.roomRequestRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("RoomRequest", "id", id+"")
@@ -41,7 +70,7 @@ public class RoomRequestServiceImpl implements RoomRequestService {
 
     @Override
     public RoomRequest findByUserAndRoom(User user, Room room) {
-        RoomRequest roomRequest = this.roomRequestRepository.findByUserAndRoom(user,room).orElseThrow(
+        RoomRequest roomRequest = this.roomRequestRepository.findPendingRoomRequestsByUserAndRoom(user,room).orElseThrow(
                 () -> new ResourceNotFoundException("RoomRequest", "User, Room", user.getId()+ " , " + room.getId()+"")
         );
         return roomRequest;

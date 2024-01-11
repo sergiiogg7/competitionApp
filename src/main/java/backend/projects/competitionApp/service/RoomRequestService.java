@@ -1,5 +1,6 @@
 package backend.projects.competitionApp.service;
 
+import backend.projects.competitionApp.entity.DataPlayer;
 import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
 import backend.projects.competitionApp.entity.User;
@@ -13,6 +14,9 @@ import java.util.Optional;
 public interface RoomRequestService {
 
     RoomRequest save(RoomRequest roomRequest);
+    void  deleteRoomRequest(DataPlayer dataPlayer);
+    void deleteAcceptedRoomRequest(DataPlayer dataPlayer);
+    void deletePendingRoomRequest(DataPlayer dataPlayer);
     RoomRequest getRoomRequestById(Long id);
     List<RoomRequest> getAllRooms(User user);
     RoomRequest findByUserAndRoom(User user, Room room);
