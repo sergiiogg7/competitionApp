@@ -4,19 +4,17 @@ import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
 import backend.projects.competitionApp.entity.User;
 import backend.projects.competitionApp.exception.UnauthorizedActionException;
-import backend.projects.competitionApp.service.DataPlayerService;
-import backend.projects.competitionApp.service.RoomRequestService;
 import backend.projects.competitionApp.service.RoomService;
 import backend.projects.competitionApp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -34,7 +32,7 @@ public class RoomController {
 
     @PostMapping
     @Operation(summary = "Create a competition room", description = "")
-    public ResponseEntity<Room> createRoom(@RequestBody Room room) {
+    public ResponseEntity<Room> createRoom(@Valid @RequestBody Room room) {
         Room savedRoom = this.roomService.createRoom(room);
         return new ResponseEntity<>(savedRoom, HttpStatus.CREATED);
     }
