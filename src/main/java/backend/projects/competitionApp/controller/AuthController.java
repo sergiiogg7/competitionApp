@@ -1,24 +1,18 @@
 package backend.projects.competitionApp.controller;
 
-import backend.projects.competitionApp.entity.Authority;
 import backend.projects.competitionApp.entity.User;
-import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.websocket.server.PathParam;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Set;
 
 @RestController
 @AllArgsConstructor
@@ -39,7 +33,7 @@ public class AuthController {
 
     @PostMapping("/register")
     @Operation(summary = "Register user", description = "")
-    public ResponseEntity<User> registerUser(@RequestBody User user) {
+    public ResponseEntity<User> registerUser(@Valid @RequestBody User user) {
         User savedUser = null;
         ResponseEntity response = null;
         String hashedPwd = this.passwordEncoder.encode(user.getPassword());
