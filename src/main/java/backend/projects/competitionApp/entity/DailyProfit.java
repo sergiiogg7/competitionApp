@@ -2,20 +2,21 @@ package backend.projects.competitionApp.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DailyProfits {
+//@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"date", "dataPlayer_id"}))
+public class DailyProfit {
 
-    public DailyProfits(Integer day, Double profit, DataPlayer dataPlayer) {
-        this.day = day;
+    public DailyProfit(LocalDate date, Long profit, DataPlayer dataPlayer) {
+        this.date = date;
         this.profit = profit;
         this.dataPlayer = dataPlayer;
     }
@@ -25,10 +26,10 @@ public class DailyProfits {
     private Long id;
 
     @Column(nullable = false)
-    private Integer day;
+    private LocalDate date;
 
     @Column(nullable = false)
-    private Double profit;
+    private Long profit;
 
     @ManyToOne
     @JsonBackReference(value = "dataPlayer-profits")

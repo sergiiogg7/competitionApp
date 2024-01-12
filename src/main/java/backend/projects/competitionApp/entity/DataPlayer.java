@@ -9,9 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -49,7 +46,7 @@ public class DataPlayer {
 
     @OneToMany(mappedBy = "dataPlayer")
     @JsonManagedReference(value = "dataPlayer-profits")
-    private Set<DailyProfits> profits;
+    private Set<DailyProfit> profits;
 
     @JsonProperty("playerId")
     public Long getPlayerId() {
