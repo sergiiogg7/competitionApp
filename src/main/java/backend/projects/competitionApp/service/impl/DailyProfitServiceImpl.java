@@ -48,11 +48,20 @@ public class DailyProfitServiceImpl implements DailyProfitService {
         User user = this.userService.getUserById(userId);
         DataPlayer dataPlayer = this.dataPlayerService.findDataPlayerByUserAndRoom(user, room);
         Optional<DailyProfit> existingOptionalDailyProfit = this.dailyProfitRepository.findDailyProfitByDataPlayerIdAndDate(updateDailyProfitRequest.getDate(), dataPlayer);
+        //Existe el DailyProfit para esa fecha y dataplayer
         if (existingOptionalDailyProfit.isPresent()) {
             DailyProfit updatedDailyProfit = existingOptionalDailyProfit.get();
-            updatedDailyProfit.setProfit(updateDailyProfitRequest.getProfit());
-            return this.saveDailyProfit(updatedDailyProfit);
+            //Existe el DailyProfit para esa fecha y dataplayer pero el profit que se ha enviado es diferente que el que existe
+            if (!updateDailyProfitRequest.getProfit().equals(updatedDailyProfit.getProfit())) {
+                this.dataPlayerService.updateEquity(dataPlayer, updateDailyProfitRequest.getProfit());
+                updatedDailyProfit.setProfit(updateDailyProfitRequest.getProfit());
+                return this.saveDailyProfit(updatedDailyProfit);
+            }
+            //Existe el DailyProfit para esa fecha y dataplayer pero el profit que se ha enviado es el mismo que el que existe.
+            return updatedDailyProfit;
         }else {
+            //No Existe el DailyProfit para esa fecha y dataplayer
+            this.dataPlayerService.updateEquity(dataPlayer, updateDailyProfitRequest.getProfit());
             return this.saveDailyProfit(updateDailyProfitRequest.getDate(), updateDailyProfitRequest.getProfit(), dataPlayer);
         }
     }
