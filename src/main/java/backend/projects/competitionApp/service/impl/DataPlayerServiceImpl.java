@@ -34,7 +34,7 @@ public class DataPlayerServiceImpl implements DataPlayerService {
     @Override
     public DataPlayer updateEquity(DataPlayer dataPlayer, Long profit) {
         Set<DailyProfit> profits = dataPlayer.getProfits();
-        Long equity = profit + profits.stream()
+        Long equity = dataPlayer.getInitialBalance() + profit + profits.stream()
                 .mapToLong(DailyProfit::getProfit)
                 .sum();
         dataPlayer.setEquity(equity);
