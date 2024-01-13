@@ -1,5 +1,6 @@
 package backend.projects.competitionApp.service.impl;
 
+import backend.projects.competitionApp.entity.DailyProfit;
 import backend.projects.competitionApp.entity.DataPlayer;
 import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.User;
@@ -12,7 +13,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @AllArgsConstructor
@@ -26,6 +29,16 @@ public class DataPlayerServiceImpl implements DataPlayerService {
     public DataPlayer save(DataPlayer dataPlayer) {
         DataPlayer savedDataPlayer = this.dataPlayerRepository.save(dataPlayer);
         return savedDataPlayer;
+    }
+
+    @Override
+    public DataPlayer updateEquity(DataPlayer dataPlayer, Long profit) {
+        Set<DailyProfit> profits = dataPlayer.getProfits();
+        Long equity = profit + profits.stream()
+                .mapToLong(DailyProfit::getProfit)
+                .sum();
+        dataPlayer.setEquity(equity);
+        return this.dataPlayerRepository.save(dataPlayer);
     }
 
     @Override
