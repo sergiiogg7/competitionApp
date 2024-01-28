@@ -5,6 +5,7 @@ import backend.projects.competitionApp.entity.Room;
 import backend.projects.competitionApp.entity.RoomRequest;
 import backend.projects.competitionApp.entity.User;
 import backend.projects.competitionApp.enumeration.RoomRequestState;
+import backend.projects.competitionApp.exception.DatesException;
 import backend.projects.competitionApp.exception.ResourceNotFoundException;
 import backend.projects.competitionApp.exception.RoomRequestAlreadyExistsException;
 import backend.projects.competitionApp.exception.UnauthorizedActionException;
@@ -19,6 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -37,8 +39,20 @@ public class RoomServiceImpl implements RoomService {
 
     @Override
     public Room createRoom(Room room) {
-        Room savedRoom = this.roomRepository.save(room);
-        return savedRoom;
+        LocalDate initDate = room.getInitialDate();
+        LocalDate endDate = room.getEndDate();
+        if (initDate.isAfter(endDate)) {
+            //Initial Date > EndDate
+            //Throw Exception
+            throw new DatesException("InitialDate cannot be after than EndDate");
+        } else if (initDate.isEqual(endDate)) {
+            //Initial Date == EndDate
+            //Throw Exception
+            throw new DatesException("InitialDate cannot be equal than EndDate");
+        }else {
+            Room savedRoom = this.roomRepository.save(room);
+            return savedRoom;
+        }
     }
 
     @Override
@@ -90,90 +104,55 @@ public class RoomServiceImpl implements RoomService {
     }
 
     @Override
+    @Transactional
     public RoomRequest createRoomRequest(Long userId, Long roomId) {
-        boolean userAuthorized = false;
         User user = this.userService.getUserById(userId);
-        Room room = this.roomRepository.findById(roomId).orElseThrow( () -> new ResourceNotFoundException("Room", "id", roomId+""));
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        Room room = this.getRoomById(roomId);
+        List<RoomRequest> roomRequests = this.roomRequestService.getAllRooms(user);
+        boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest ->
+                roomRequest.getRequestingUser().equals(user) &&
+                roomRequest.getRequestingRoom().equals(room) &&
+                !roomRequest.getState().equals(RoomRequestState.DECLINED));
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            if (username.equals(user.getEmail())) { userAuthorized = true; }
+        if (roomRequestExists) {
+            throw new RoomRequestAlreadyExistsException("RoomRequest", "userId", userId+"", "roomId", roomId+"");
         }
 
-        if (userAuthorized) {
-            List<RoomRequest> roomRequests = this.roomRequestService.getAllRooms(user);
-            boolean roomRequestExists = roomRequests.stream().anyMatch(roomRequest ->
-                    roomRequest.getRequestingUser().equals(user) &&
-                    roomRequest.getRequestingRoom().equals(room) &&
-                    !roomRequest.getState().equals(RoomRequestState.DECLINED));
-
-            if (roomRequestExists) {
-                throw new RoomRequestAlreadyExistsException("RoomRequest", "userId", userId+"", "roomId", roomId+"");
-            }
-
-            RoomRequest savedRoomRequest = this.roomRequestService.save(new RoomRequest(RoomRequestState.PENDING, user, room));
-            return savedRoomRequest;
-        } else {
-            throw new UnauthorizedActionException();
-        }
-
+        RoomRequest savedRoomRequest = this.roomRequestService.save(new RoomRequest(RoomRequestState.PENDING, user, room));
+        return savedRoomRequest;
     }
 
     @Override
     @Transactional
     public Room grantAccessToUser(Long roomId, Long userId) {
-        boolean userAuthorized = false;
-
         Room room = this.getRoomById(roomId);
         User user = this.userService.getUserById(userId);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
+        if (roomRequest.getState() == RoomRequestState.PENDING) {
+            roomRequest.setState(RoomRequestState.ACCEPTED);
+            this.roomRequestService.save(roomRequest);
+            List<Double> profits = new ArrayList<>();
+            //ERRROR AQUI AL CREAR EQUITY NO PUEDE SER NULL, luego que valor pongo por defecto?
+            DataPlayer dataPlayer = new DataPlayer((long) 0,(long) 0, user, room);
+            this.dataPlayerService.save(dataPlayer);
         }
 
-        if (userAuthorized) {
-            RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
-            if (roomRequest.getState() == RoomRequestState.PENDING) {
-                roomRequest.setState(RoomRequestState.ACCEPTED);
-                this.roomRequestService.save(roomRequest);
-                List<Double> profits = new ArrayList<>();
-                DataPlayer dataPlayer = new DataPlayer(user, room);
-                this.dataPlayerService.save(dataPlayer);
-            }
-
-            return room;
-        }else {
-            throw new UnauthorizedActionException();
-        }
-
+        return room;
     }
 
     @Override
     @Transactional
     public Room revokeAccess(Long roomId, Long userId) {
-        boolean userAuthorized = false;
         Room room = this.getRoomById(roomId);
         User user = this.userService.getUserById(userId);
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
 
-        if (authentication != null && authentication.isAuthenticated()) {
-            String username = authentication.getName();
-            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
+        if (roomRequest.getState() == RoomRequestState.PENDING) {
+            roomRequest.setState(RoomRequestState.DECLINED);
+            this.roomRequestService.save(roomRequest);
         }
 
-        if (userAuthorized) {
-            RoomRequest roomRequest = this.roomRequestService.findByUserAndRoom(user, room);
-            if (roomRequest.getState() == RoomRequestState.PENDING) {
-                roomRequest.setState(RoomRequestState.DECLINED);
-                this.roomRequestService.save(roomRequest);
-            }
-
-            return room;
-        } else {
-            throw new UnauthorizedActionException();
-        }
+        return room;
     }
 }
