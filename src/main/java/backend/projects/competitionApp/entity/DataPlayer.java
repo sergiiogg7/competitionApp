@@ -18,7 +18,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class DataPlayer {
 
-    public DataPlayer(User player, Room room) {
+    public DataPlayer(Long initialBalance, Long equity, User player, Room room) {
         this.player = player;
         this.room = room;
     }
