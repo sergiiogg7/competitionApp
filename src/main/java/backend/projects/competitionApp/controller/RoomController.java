@@ -33,8 +33,25 @@ public class RoomController {
     @PostMapping
     @Operation(summary = "Create a competition room", description = "")
     public ResponseEntity<Room> createRoom(@Valid @RequestBody Room room) {
-        Room savedRoom = this.roomService.createRoom(room);
-        return new ResponseEntity<>(savedRoom, HttpStatus.CREATED);
+        boolean userAuthorized = false;
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (authentication != null && authentication.isAuthenticated()) {
+            //Hago la verificacion de los Ids del usuario del JWT y del id del owner de la room
+            String username = authentication.getName();
+            Long userJwtId = this.userService.getUserByEmail(username).getId();
+            Long userIdRoomOwner = room.getOwner().getId();
+            if(userJwtId == userIdRoomOwner) {
+                userAuthorized = true;
+            }
+        }
+
+        if (userAuthorized) {
+            Room savedRoom = this.roomService.createRoom(room);
+            return new ResponseEntity<>(savedRoom, HttpStatus.CREATED);
+        } else {
+            throw new UnauthorizedActionException();
+        }
+
     }
 
     @PutMapping("/{room_id}")
@@ -127,7 +144,22 @@ public class RoomController {
             "access to the owner of the room with roomId identifier")
     public ResponseEntity<RoomRequest> requestAccess(@PathVariable("user_id") Long userId,
                                                      @PathVariable("room_id") Long roomId) {
-        return new ResponseEntity<>(this.roomService.createRoomRequest(userId, roomId), HttpStatus.OK);
+        boolean userAuthorized = false;
+        User user = this.userService.getUserById(userId);
+        Room room = this.roomService.getRoomById(roomId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(user.getEmail())) { userAuthorized = true; }
+        }
+
+        if (userAuthorized) {
+            return new ResponseEntity<>(this.roomService.createRoomRequest(userId, roomId), HttpStatus.OK);
+        }else {
+            throw new UnauthorizedActionException();
+        }
+
     }
 
     @PostMapping("/{room_id}/user/{user_id}")
@@ -135,8 +167,23 @@ public class RoomController {
             "to the user with user_id to the room with roomId")
     public ResponseEntity<Room> grantAccess(@PathVariable("room_id") Long roomId,
                                              @PathVariable("user_id") Long userId) {
-        Room room = this.roomService.grantAccessToUser(roomId, userId);
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        boolean userAuthorized = false;
+
+        Room room = this.roomService.getRoomById(roomId);
+        User user = this.userService.getUserById(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
+        }
+
+        if (userAuthorized) {
+            return new ResponseEntity<>(this.roomService.grantAccessToUser(roomId, userId), HttpStatus.OK);
+        }else {
+            throw new UnauthorizedActionException();
+        }
+
     }
 
     @DeleteMapping("/{room_id}/user/{user_id}")
@@ -144,7 +191,20 @@ public class RoomController {
             "to the user with user_id to the room with roomId")
     public ResponseEntity<Room> revokeAccess(@PathVariable("room_id") Long roomId,
                                             @PathVariable("user_id") Long userId) {
-        Room room = this.roomService.revokeAccess(roomId, userId);
-        return new ResponseEntity<>(room, HttpStatus.OK);
+        boolean userAuthorized = false;
+        Room room = this.roomService.getRoomById(roomId);
+        User user = this.userService.getUserById(userId);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.isAuthenticated()) {
+            String username = authentication.getName();
+            if (username.equals(room.getOwner().getEmail())) { userAuthorized = true; }
+        }
+
+        if(userAuthorized) {
+            return new ResponseEntity<>(this.roomService.revokeAccess(roomId, userId), HttpStatus.OK);
+        } else {
+            throw new UnauthorizedActionException();
+        }
     }
 }
