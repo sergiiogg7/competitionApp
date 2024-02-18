@@ -1,20 +1,16 @@
 package backend.projects.competitionApp.service.impl;
 
-import backend.projects.competitionApp.entity.DataPlayer;
-import backend.projects.competitionApp.entity.Room;
-import backend.projects.competitionApp.entity.RoomRequest;
-import backend.projects.competitionApp.entity.User;
+import backend.projects.competitionApp.entity.*;
 import backend.projects.competitionApp.enumeration.RoomRequestState;
 import backend.projects.competitionApp.exception.DatesException;
 import backend.projects.competitionApp.exception.ResourceNotFoundException;
 import backend.projects.competitionApp.exception.RoomRequestAlreadyExistsException;
 import backend.projects.competitionApp.exception.UnauthorizedActionException;
 import backend.projects.competitionApp.repository.RoomRepository;
-import backend.projects.competitionApp.service.DataPlayerService;
-import backend.projects.competitionApp.service.RoomRequestService;
-import backend.projects.competitionApp.service.RoomService;
-import backend.projects.competitionApp.service.UserService;
+import backend.projects.competitionApp.repository.TrophyRepository;
+import backend.projects.competitionApp.service.*;
 import lombok.AllArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -22,12 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Service
 @AllArgsConstructor
 public class RoomServiceImpl implements RoomService {
+
+    private TrophyService trophyService;
 
     private UserService userService;
 
@@ -38,19 +37,28 @@ public class RoomServiceImpl implements RoomService {
     private RoomRequestService roomRequestService;
 
     @Override
+    @Transactional
     public Room createRoom(Room room) {
         LocalDate initDate = room.getInitialDate();
         LocalDate endDate = room.getEndDate();
+        LocalDate now = LocalDate.now();
         if (initDate.isAfter(endDate)) {
-            //Initial Date > EndDate
-            //Throw Exception
             throw new DatesException("InitialDate cannot be after than EndDate");
         } else if (initDate.isEqual(endDate)) {
-            //Initial Date == EndDate
-            //Throw Exception
             throw new DatesException("InitialDate cannot be equal than EndDate");
+        } else if (LocalDate.now().isAfter(initDate)) {
+            throw new DatesException("InitialDate cannot be before today.");
         }else {
             Room savedRoom = this.roomRepository.save(room);
+
+            // Crea los trofeos dentro de una transacción
+            List<Trophy> trophies = new ArrayList<>();
+            for (Trophy trophy : room.getTrophies()) {
+                Trophy createdTrophy = trophyService.create(new Trophy(trophy.getTrophy(), savedRoom));
+                trophies.add(createdTrophy);
+            }
+
+            savedRoom.setTrophies(new HashSet<>(trophies)); // Asigna los trofeos a la sala
             return savedRoom;
         }
     }
