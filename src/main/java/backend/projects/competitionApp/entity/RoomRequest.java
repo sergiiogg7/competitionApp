@@ -2,6 +2,7 @@ package backend.projects.competitionApp.entity;
 
 import backend.projects.competitionApp.enumeration.RoomRequestState;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,4 +32,19 @@ public class RoomRequest {
         this.requestingUser = requestingUser;
         this.requestingRoom = requestingRoom;
     }
+
+//    @JsonProperty("requestingRoomId")
+//    public Long getRequestingRoomId() {
+//
+//        requestingRoom.getId();
+//        requestingRoom.getName();
+//        return requestingRoom.getId();
+//    }
+//
+//    @JsonProperty("requestingUserId")
+//    public Long getRequestingUserId() {
+//        requestingUser.getId();
+//        requestingUser.getEmail();
+//        return requestingUser.getId();
+//    }
 }

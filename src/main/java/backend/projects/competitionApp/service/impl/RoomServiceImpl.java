@@ -141,8 +141,9 @@ public class RoomServiceImpl implements RoomService {
             roomRequest.setState(RoomRequestState.ACCEPTED);
             this.roomRequestService.save(roomRequest);
             List<Double> profits = new ArrayList<>();
-            //ERRROR AQUI AL CREAR EQUITY NO PUEDE SER NULL, luego que valor pongo por defecto?
-            DataPlayer dataPlayer = new DataPlayer((long) 0,(long) 0, user, room);
+            // Set a default value for equity, you might want to adjust this based on your application logic
+            Long defaultEquityValue = 0L;
+            DataPlayer dataPlayer = new DataPlayer(Long.MAX_VALUE, defaultEquityValue, user, room);
             this.dataPlayerService.save(dataPlayer);
         }
 
